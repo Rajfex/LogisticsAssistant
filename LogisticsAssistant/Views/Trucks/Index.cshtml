@@ -1,0 +1,39 @@
+﻿@model IEnumerable<LogisticsAssistant.Models.Truck>
+
+@{
+	ViewData["Title"] = "List of Trucks";
+}
+
+<h1>List of Trucks</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.LicensePlate)
+            </th>
+            <th> @Html.DisplayNameFor(model => model.DriverBreak)</th>
+            <th> @Html.DisplayNameFor(model => model.Vmax)</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LicensePlate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DriverBreak)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Vmax)
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

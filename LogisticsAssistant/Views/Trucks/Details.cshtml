@@ -1,0 +1,21 @@
+﻿@model LogisticsAssistant.Models.Truck
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<div>
+	<h1>
+		Licence plate: @Html.DisplayFor(model => model.LicensePlate)
+	</h1>
+	<hr />
+	<p>
+		Vmax: @Html.DisplayFor(model => model.Vmax)
+	</p>
+	<p>
+		Break that Driver must take: @Html.DisplayFor(model => model.DriverBreak)
+	</p>
+	<form asp-action="Delete" asp-route-id=@Model.Id method="post">
+		<button type="submit" class="btn btn-danger">Delete</button>
+	</form>
+</div>
