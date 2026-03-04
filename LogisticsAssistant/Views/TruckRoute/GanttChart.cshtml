@@ -1,0 +1,59 @@
+﻿@model IEnumerable<LogisticsAssistant.Models.TruckRoute>
+
+@{
+    Func<LogisticsAssistant.Models.TruckRoute, DateTime> CalculateEnd = route =>
+    {
+        double travelHours = (double)route.Distance / route.Truck.Vmax;
+        int numberOfBreaks = route.Distance / route.BreakFrequency;
+        double breakHours = (numberOfBreaks * route.Truck.DriverBreak) / 60.0;
+        return route.Date.AddHours(travelHours + breakHours);
+    };
+
+    var ganttData = Model.Select(r => new
+    {
+        TruckName = r.Truck.LicensePlate,
+        Start = r.Date,
+        End = CalculateEnd(r)
+    }).ToList();
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Truck Routes Gantt with Breaks</title>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load('current', {'packages':['timeline']});
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+            var container = document.getElementById('gantt_chart');
+            var chart = new google.visualization.Timeline(container);
+            var dataTable = new google.visualization.DataTable();
+
+            dataTable.addColumn({ type: 'string', id: 'Truck' });
+            dataTable.addColumn({ type: 'date', id: 'Start' });
+            dataTable.addColumn({ type: 'date', id: 'End' });
+
+            dataTable.addRows([
+                @foreach (var row in ganttData)
+                {
+                        <text>
+                            ['@row.TruckName',
+                             new Date(@row.Start.Year, @row.Start.Month-1, @row.Start.Day, @row.Start.Hour, @row.Start.Minute),
+                             new Date(@row.End.Year, @row.End.Month-1, @row.End.Day, @row.End.Hour, @row.End.Minute)
+                            ],
+                        </text>
+                }
+            ]);
+
+            chart.draw(dataTable);
+        }
+    </script>
+</head>
+<body>
+    <h2>Routs</h2>
+    <div id="gantt_chart" style="height: 500px;"></div>
+</body>
+</html>

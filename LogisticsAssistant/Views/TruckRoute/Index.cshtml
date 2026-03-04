@@ -1,0 +1,31 @@
+﻿@{
+    ViewData["Title"] = "All routes";
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Tablica rejestracyjna</th>
+			<th>Przerwa kierowcy</th>
+			<th>Vmax</th>
+            <th>Dystans</th>
+            <th>Przerwa</th>
+            <th>Start trasy</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in ViewBag.Routes)
+        {
+            <tr>
+                <td>@item.Truck.LicensePlate</td>
+                <td>@item.Truck.DriverBreak</td>
+                <td>@item.Truck.Vmax</td>
+                <td>@item.Distance</td>
+                <td>@item.BreakFrequency</td>
+                <td>@item.Date.ToString("yyyy-MM-dd hh:mm")</td>
+                <td><a asp-action="RouteDetail" asp-route-id="@item.Id">Details</a></td>
+            </tr>
+        }
+    </tbody>
+</table>

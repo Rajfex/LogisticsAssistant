@@ -18,4 +18,5 @@
 	<form asp-action="Delete" asp-route-id=@Model.Id method="post">
 		<button type="submit" class="btn btn-danger">Delete</button>
 	</form>
+	<a asp-action="Edit" asp-route-id=@Model.Id" class="btn btn-info">Edit</a>
 </div>

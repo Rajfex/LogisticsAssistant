@@ -45,5 +45,21 @@ namespace LogisticsAssistant.Services
 
             return true;
         }
+
+        public async Task<bool> UpdateTruckAsync(int id, TruckViewModel truckView)
+        {
+            var truck = await _context.Trucks.FirstOrDefaultAsync(t => t.Id == id);
+            if (truck == null)
+            {
+                return false;
+            }
+            truck.LicensePlate = truckView.LicensePlate;
+            truck.Vmax = truckView.Vmax;
+            truck.DriverBreak = truckView.DriverBreak;
+            _context.Trucks.Update(truck);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
     }
 }

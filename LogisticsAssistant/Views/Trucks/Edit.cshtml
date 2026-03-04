@@ -1,0 +1,30 @@
+﻿@model LogisticsAssistant.Models.Truck
+
+@{
+    ViewData["Title"] = "Add truck";
+}
+
+<h1>Edit truck</h1>
+<hr>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit" method="post">
+            <div class="form-group">
+                <label asp-for="LicensePlate" class="control-label"></label>
+                <input asp-for="LicensePlate" value=@Model.LicensePlate class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Vmax" class="control-label"></label>
+                <input asp-for="Vmax" type="number" value=@Model.Vmax class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="DriverBreak" class="control-label"></label>
+                <input asp-for="DriverBreak" type="number" value=@Model.DriverBreak class="form-control" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>

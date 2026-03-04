@@ -55,6 +55,7 @@ namespace LogisticsAssistant.Controllers
             {
                 return NotFound();
             }
+            
             return View(truck);
         }
 
@@ -67,6 +68,30 @@ namespace LogisticsAssistant.Controllers
                 return RedirectToAction("Index");
             }
             return View();
+        }
+
+        // GET: /Trucks/Edit/5
+        public async Task<IActionResult> Edit(int id)
+        {
+            var truck = await _context.Trucks.FirstOrDefaultAsync(t => t.Id == id);
+            if (truck == null)
+            {
+                return NotFound();
+            }
+            return View(truck);
+        }
+
+        //POST: /Trucks/Edit/5
+        [Authorize]
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id, TruckViewModel truckView)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(truckView);
+            }
+            await _truckService.UpdateTruckAsync(id, truckView);
+            return RedirectToAction("Index");
         }
     }
 }

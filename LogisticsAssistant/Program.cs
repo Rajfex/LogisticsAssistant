@@ -23,6 +23,7 @@ namespace LogisticsAssistant
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<ITrucksService, TrucksService>();
+            builder.Services.AddScoped<ITruckRouteService, TruckRouteService>();
 
             var app = builder.Build();
 

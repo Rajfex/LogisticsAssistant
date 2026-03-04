@@ -11,9 +11,13 @@ namespace LogisticsAssistant.Models
         public int Id { get; set; }
         [Required]
         public int TruckId { get; set; }
+
+        [ForeignKey("TruckId")]
+        public Truck Truck { get; set; }
         [Required]
         public int Distance { get; set; } // in kilometers
         [Required]
+        public int BreakFrequency { get; set; } // in minutes
         public DateTime Date { get; set; } = DateTime.Now;
     }
 }
