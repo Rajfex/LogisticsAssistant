@@ -7,11 +7,9 @@ namespace LogisticsAssistant.Models
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-
         public int Id { get; set; }
         [Required]
         public int TruckId { get; set; }
-
         [ForeignKey("TruckId")]
         public Truck Truck { get; set; }
         [Required]
@@ -19,5 +17,9 @@ namespace LogisticsAssistant.Models
         [Required]
         public int BreakFrequency { get; set; } // in minutes
         public DateTime Date { get; set; } = DateTime.Now;
+        [Required]
+        public int TruckVmax { get; set; }
+        [Required]
+        public int TruckDriverBreak { get; set; }
     }
 }

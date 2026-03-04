@@ -3,6 +3,7 @@ using LogisticsAssistant.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace LogisticsAssistant.Controllers
 {
@@ -37,6 +38,7 @@ namespace LogisticsAssistant.Controllers
 
         [HttpPost]
         [Authorize]
+
         public async Task<IActionResult> Create(TruckRouteViewModel truckRouteView)
         {
             if (!ModelState.IsValid)
@@ -51,7 +53,18 @@ namespace LogisticsAssistant.Controllers
                 return View(truckRouteView);
             }
 
-            await _truckRouteService.CreateTruckRouteAsync(truckRouteView);
+            var result = await _truckRouteService.CreateTruckRouteAsync(truckRouteView);
+            if (!result)
+            {
+                var trucks = await _truckRouteService.GetAllTrucks();
+                ViewBag.Trucks = trucks.Select(t => new SelectListItem
+                {
+                    Value = t.Key.ToString(),
+                    Text = t.Value
+                }).ToList();
+                return View(truckRouteView);
+            }
+
             return RedirectToAction("Index");
         }
 

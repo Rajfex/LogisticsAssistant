@@ -14,23 +14,21 @@ namespace LogisticsAssistant.Services
 
         public async Task<bool> CreateTruckRouteAsync(TruckRouteViewModel truckRouteView)
         {
-            var truckExists = await _context.Trucks.AnyAsync(t => t.Id == truckRouteView.TruckId);
-            if (!truckExists)
-            {
-                return false;
-            }
+            var truck = await _context.Trucks.FirstOrDefaultAsync(t => t.Id == truckRouteView.TruckId);
+            if (truck == null) return false;
 
             var newRoute = new TruckRoute
             {
-                TruckId = truckRouteView.TruckId,
-                BreakFrequency = truckRouteView.BreakFrequency,
+                TruckId = truck.Id,
                 Distance = truckRouteView.Distance,
-                Date = DateTime.Now
+                BreakFrequency = truckRouteView.BreakFrequency,
+                Date = DateTime.Now,
+                TruckVmax = truck.Vmax,        
+                TruckDriverBreak = truck.DriverBreak 
             };
 
             _context.Routes.Add(newRoute);
             await _context.SaveChangesAsync();
-
             return true;
         }
 

@@ -1,11 +1,11 @@
 ﻿@model IEnumerable<LogisticsAssistant.Models.TruckRoute>
 
 @{
-    Func<LogisticsAssistant.Models.TruckRoute, DateTime> CalculateEnd = route =>
+    Func<TruckRoute, DateTime> CalculateEnd = route =>
     {
-        double travelHours = (double)route.Distance / route.Truck.Vmax;
+        double travelHours = (double)route.Distance / route.TruckVmax;
         int numberOfBreaks = route.Distance / route.BreakFrequency;
-        double breakHours = (numberOfBreaks * route.Truck.DriverBreak) / 60.0;
+        double breakHours = (numberOfBreaks * route.TruckDriverBreak) / 60.0;
         return route.Date.AddHours(travelHours + breakHours);
     };
 
