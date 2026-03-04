@@ -67,7 +67,7 @@ namespace LogisticsAssistant.Controllers
 
             return RedirectToAction("Index");
         }
-
+        [Authorize]
         public async Task<IActionResult> RouteDetail(int id)
         {
             var route = await _truckRouteService.GetTruckRouteByIdAsync(id);
@@ -78,7 +78,7 @@ namespace LogisticsAssistant.Controllers
 
             return View(route);
         }
-
+        [Authorize]
         public async Task<IActionResult> GanttChart(int id)
         {
             var routes = await _truckRouteService.GetAllTruckRoutesAsync();

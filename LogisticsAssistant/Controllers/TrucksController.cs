@@ -47,7 +47,7 @@ namespace LogisticsAssistant.Controllers
             await _truckService.CreateTruckAsync(truckView);
             return RedirectToAction("Index");
         }
-
+        [Authorize]
         public async Task<IActionResult> Details(int id)
         {
             var truck = await _context.Trucks.FirstOrDefaultAsync(t => t.Id == id);
@@ -60,6 +60,7 @@ namespace LogisticsAssistant.Controllers
         }
 
         // DELETE: /Trucks/Delete/5
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
@@ -70,6 +71,7 @@ namespace LogisticsAssistant.Controllers
             return View();
         }
 
+        [Authorize]
         // GET: /Trucks/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
