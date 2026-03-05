@@ -54,7 +54,7 @@ namespace LogisticsAssistant.Controllers
 
         // POST: /Auth/Login
         [HttpPost]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        public async Task<IActionResult> LoginAsync(LoginViewModel model)
         {
             if (!ModelState.IsValid) return View(model);
 
