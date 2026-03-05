@@ -19,9 +19,4 @@ git clone https://github.com/Rajfex/LogisticsAssistant.git
 ```
 Open the solution file ```(.sln)``` in Visual Studio.
 
-Update the connection string in appsettings.json.
-
-Run migrations to set up the database:
-```Update-Database```
-
 Build and run the application.
