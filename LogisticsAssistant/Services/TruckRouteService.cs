@@ -14,21 +14,47 @@ namespace LogisticsAssistant.Services
 
         public async Task<bool> CreateTruckRouteAsync(TruckRouteViewModel truckRouteView)
         {
-            var truck = await _context.Trucks.FirstOrDefaultAsync(t => t.Id == truckRouteView.TruckId);
-            if (truck == null) return false;
+            var truck = await _context.Trucks
+                .FirstOrDefaultAsync(t => t.Id == truckRouteView.TruckId);
+
+            if (truck == null)
+                return false;
+
+            var lastRoute = await _context.Routes
+                .Where(r => r.TruckId == truckRouteView.TruckId)
+                .OrderByDescending(r => r.Date)
+                .FirstOrDefaultAsync();
+
+            if (lastRoute != null)
+            {
+                double travelHours = (double)lastRoute.Distance / lastRoute.TruckVmax;
+                double travelMinutes = travelHours * 60;
+                int numberOfBreaks = (int)(travelMinutes / lastRoute.BreakFrequency);
+                double breakMinutes = numberOfBreaks * lastRoute.TruckDriverBreak;
+                double totalMinutes = travelMinutes + breakMinutes;
+
+                DateTime lastRouteEnd = lastRoute.Date.AddMinutes(totalMinutes);
+                DateTime earliestNextRoute = lastRouteEnd.AddMinutes(truck.DriverBreak);
+
+                if (truckRouteView.Date < earliestNextRoute)
+                {
+                    return false;
+                }
+            }
 
             var newRoute = new TruckRoute
             {
                 TruckId = truck.Id,
                 Distance = truckRouteView.Distance,
                 BreakFrequency = truckRouteView.BreakFrequency,
-                Date = DateTime.Now,
-                TruckVmax = truck.Vmax,        
-                TruckDriverBreak = truck.DriverBreak 
+                Date = truckRouteView.Date,
+                TruckVmax = truck.Vmax,
+                TruckDriverBreak = truck.DriverBreak
             };
 
             _context.Routes.Add(newRoute);
             await _context.SaveChangesAsync();
+
             return true;
         }
 

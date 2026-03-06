@@ -4,9 +4,12 @@
     Func<TruckRoute, DateTime> CalculateEnd = route =>
     {
         double travelHours = (double)route.Distance / route.TruckVmax;
-        int numberOfBreaks = route.Distance / route.BreakFrequency;
-        double breakHours = (numberOfBreaks * route.TruckDriverBreak) / 60.0;
-        return route.Date.AddHours(travelHours + breakHours);
+        double travelMinutes = travelHours * 60;
+        int numberOfBreaks = (int)(travelMinutes / route.BreakFrequency);
+        double breakMinutes = numberOfBreaks * route.TruckDriverBreak;
+        double totalHours = (travelMinutes + breakMinutes) / 60.0;
+
+        return route.Date.AddHours(totalHours);
     };
 
     var ganttData = Model.Select(r => new

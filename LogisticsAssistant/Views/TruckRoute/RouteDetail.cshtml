@@ -3,21 +3,24 @@
 @{
     ViewData["Title"] = "Detail of route";
 
-    double distance = Model.Distance;              
-    double vmax = Model.Truck.Vmax;                  
-    double breakFreq = Model.BreakFrequency;       
-    double breakMinutes = Model.Truck.DriverBreak;
+    double distance = Model.Distance;
+    double vmax = Model.Truck.Vmax;
+    double breakFrequency = Model.BreakFrequency;
+    double driverBreak = Model.Truck.DriverBreak; 
     DateTime start = Model.Date;
 
-    double segmentTimeHours = breakFreq / vmax; 
-    int numberOfBreaks = (int)(distance / breakFreq) - 1;
-    if (numberOfBreaks < 0) numberOfBreaks = 0;
+    double driveHours = distance / vmax;
+    double driveMinutes = driveHours * 60;
 
-    double totalDriveHours = distance / vmax;
-    TimeSpan totalBreaks = TimeSpan.FromMinutes(numberOfBreaks * breakMinutes);
+    int numberOfBreaks = (int)(driveMinutes / breakFrequency);
 
-    TimeSpan totalTime = TimeSpan.FromHours(totalDriveHours) + totalBreaks;
-    DateTime endTime = start + totalTime;
+    double totalBreakMinutes = numberOfBreaks * driverBreak;
+
+    TimeSpan drivingTime = TimeSpan.FromMinutes(driveMinutes);
+    TimeSpan breakTime = TimeSpan.FromMinutes(totalBreakMinutes);
+    TimeSpan totalTime = drivingTime + breakTime;
+
+    DateTime endTime = start.Add(totalTime);
 }
 
 <div>
@@ -27,15 +30,15 @@
     <p>Vmax: @Model.Truck.Vmax km/h</p>
     <p>Break that Driver must take: @Model.Truck.DriverBreak min</p>
     <p>Distance: @Model.Distance km</p>
-    <p>Break frequency: @Model.BreakFrequency km</p>
+    <p>Break frequency: @Model.BreakFrequency min</p>
     <p>Date of start of route: @Model.Date</p>
 
-    <hr/>
+    <hr />
 
     <h2>Summary</h2>
 
-    <p>Total driving time: @TimeSpan.FromHours(totalDriveHours)</p>
-    <p>Total break time: @totalBreaks</p>
+    <p>Total driving time: @drivingTime</p>
+    <p>Total break time: @breakTime</p>
     <p>Total route duration: @totalTime</p>
     <p><strong>Route ends at: @endTime</strong></p>
 </div>

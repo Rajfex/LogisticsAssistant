@@ -10,5 +10,7 @@ namespace LogisticsAssistant.Models
         public int Distance { get; set; } // in kilometers
         [Required]
         public int BreakFrequency { get; set; } // in minutes
+        [Required]
+        public DateTime Date { get; set; }
     }
 }

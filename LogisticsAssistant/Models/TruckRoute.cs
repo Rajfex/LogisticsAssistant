@@ -16,7 +16,8 @@ namespace LogisticsAssistant.Models
         public int Distance { get; set; } // in kilometers
         [Required]
         public int BreakFrequency { get; set; } // in minutes
-        public DateTime Date { get; set; } = DateTime.Now;
+        [Required]
+        public DateTime Date { get; set; }
         [Required]
         public int TruckVmax { get; set; }
         [Required]
