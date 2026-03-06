@@ -27,19 +27,24 @@ namespace LogisticsAssistant.Services
 
             if (lastRoute != null)
             {
-                double travelHours = (double)lastRoute.Distance / lastRoute.TruckVmax;
-                double travelMinutes = travelHours * 60;
+                if (lastRoute.TruckVmax <= 0 || lastRoute.BreakFrequency <= 0)
+                    return false;
+
+                double travelMinutes = ((double)lastRoute.Distance / lastRoute.TruckVmax) * 60;
+
                 int numberOfBreaks = (int)(travelMinutes / lastRoute.BreakFrequency);
                 double breakMinutes = numberOfBreaks * lastRoute.TruckDriverBreak;
+
                 double totalMinutes = travelMinutes + breakMinutes;
+
+                if (double.IsInfinity(totalMinutes) || double.IsNaN(totalMinutes))
+                    return false;
 
                 DateTime lastRouteEnd = lastRoute.Date.AddMinutes(totalMinutes);
                 DateTime earliestNextRoute = lastRouteEnd.AddMinutes(truck.DriverBreak);
 
                 if (truckRouteView.Date < earliestNextRoute)
-                {
                     return false;
-                }
             }
 
             var newRoute = new TruckRoute

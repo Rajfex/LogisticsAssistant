@@ -154,5 +154,112 @@ namespace LogisticAssistant.Tests
 
             Assert.Null(result);
         }
+
+        [Fact]
+        public async Task CreateTruckRouteAsync_ShouldReturnTrue_WhenBreakIsEnough()
+        {
+            var context = GetDbContext();
+            var httpContextAccessor = GetHttpContextAccessor();
+            context.Trucks.Add(new Truck { Id = 1, LicensePlate = "ABC123", Vmax = 100, DriverBreak = 15 });
+            context.Routes.Add(new TruckRoute
+            {
+                Id = 1,
+                TruckId = 1,
+                Distance = 100,
+                BreakFrequency = 2,
+                Date = DateTime.Now
+            });
+            context.SaveChanges();
+            var service = new TruckRouteService(context);
+            var truckRouteView = new TruckRouteViewModel
+            {
+                TruckId = 1,
+                Distance = 200,
+                BreakFrequency = 2,
+                Date = DateTime.Now.AddMinutes(70)
+            };
+            var result = await service.CreateTruckRouteAsync(truckRouteView);
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task CreateTruckRouteAsync_ShouldReturnFalse_WhenBreakTimeIsNotEnough()
+        {
+            var context = GetDbContext();
+            var httpContextAccessor = GetHttpContextAccessor();
+            context.Trucks.Add(new Truck { Id = 1, LicensePlate = "ABC123", Vmax = 100, DriverBreak = 15 });
+            context.Routes.Add(new TruckRoute
+            {
+                Id = 1,
+                TruckId = 1,
+                Distance = 200,
+                BreakFrequency = 2,
+                Date = DateTime.Now
+            });
+            context.SaveChanges();
+            var service = new TruckRouteService(context);
+            var truckRouteView = new TruckRouteViewModel
+            {
+                TruckId = 1,
+                Distance = 200,
+                BreakFrequency = 2,
+                Date = DateTime.Now.AddMinutes(10)
+            };
+            var result = await service.CreateTruckRouteAsync(truckRouteView);
+            Assert.False(result);
+        }
+
+        [Fact]
+        public async Task CreateTruckRouteAsync_ShouldReturnFasle_WhenVmaxIsZero()
+        {
+            var context = GetDbContext();
+            var httpContextAccessor = GetHttpContextAccessor();
+            context.Trucks.Add(new Truck { Id = 1, LicensePlate = "ABC123", Vmax = 0, DriverBreak = 15 });
+            context.Routes.Add(new TruckRoute
+            {
+                Id = 1,
+                TruckId = 1,
+                Distance = 200,
+                BreakFrequency = 2,
+                Date = DateTime.Now
+            });
+            context.SaveChanges();
+            var service = new TruckRouteService(context);
+            var truckRouteView = new TruckRouteViewModel
+            {
+                TruckId = 1,
+                Distance = 200,
+                BreakFrequency = 2,
+                Date = DateTime.Now.AddMinutes(10)
+            };
+            var result = await service.CreateTruckRouteAsync(truckRouteView);
+            Assert.False(result);
+        }
+
+        public async Task CreateTruckRouteAsync_ShouldReturnFalse_WhenBreakFrequencyIsZero()
+        {
+            var context = GetDbContext();
+            var httpContextAccessor = GetHttpContextAccessor();
+            context.Trucks.Add(new Truck { Id = 1, LicensePlate = "ABC123", Vmax = 100, DriverBreak = 15 });
+            context.Routes.Add(new TruckRoute
+            {
+                Id = 1,
+                TruckId = 1,
+                Distance = 200,
+                BreakFrequency = 0,
+                Date = DateTime.Now
+            });
+            context.SaveChanges();
+            var service = new TruckRouteService(context);
+            var truckRouteView = new TruckRouteViewModel
+            {
+                TruckId = 1,
+                Distance = 200,
+                BreakFrequency = 0,
+                Date = DateTime.Now.AddMinutes(10)
+            };
+            var result = await service.CreateTruckRouteAsync(truckRouteView);
+            Assert.False(result);
+        }
     }
 }
