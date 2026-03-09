@@ -1,24 +1,97 @@
 ﻿@model IEnumerable<LogisticsAssistant.Models.TruckRoute>
 
-@{
-    Func<TruckRoute, DateTime> CalculateEnd = route =>
-    {
-        double travelHours = (double)route.Distance / route.TruckVmax;
-        double travelMinutes = travelHours * 60;
-        int numberOfBreaks = (int)(travelMinutes / route.BreakFrequency);
-        double breakMinutes = numberOfBreaks * route.TruckDriverBreak;
-        double totalHours = (travelMinutes + breakMinutes) / 60.0;
+@functions {
+    @functions {
+        public DateTime CalculateEnd(TruckRoute route, List<GanttRow> ganttData)
+        {
+            double driveHours = (double)route.Distance / route.Truck.Vmax;
+            double driveMinutes = driveHours * 60;
 
-        return route.Date.AddHours(totalHours);
-    };
+            double remainingToBreak = route.RemainingToBreak;
+            double firstSegment = Math.Min(remainingToBreak, driveMinutes);
+            double remainingAfterFirst = driveMinutes - firstSegment;
 
-    var ganttData = Model.Select(r => new
-    {
-        TruckName = r.Truck.LicensePlate,
-        Start = r.Date,
-        End = CalculateEnd(r)
-    }).ToList();
+            int numberOfBreaks = 0;
+
+            if (remainingAfterFirst > 0)
+            {
+                numberOfBreaks++;
+                numberOfBreaks += (int)(remainingAfterFirst / route.BreakFrequency);
+            }
+
+            double totalBreakMinutes = numberOfBreaks * route.Truck.DriverBreak;
+
+            TimeSpan drivingTime = TimeSpan.FromMinutes(driveMinutes);
+            TimeSpan breakTime = TimeSpan.FromMinutes(totalBreakMinutes);
+            TimeSpan totalTime = drivingTime + breakTime;
+
+            if (numberOfBreaks == 0)
+            {
+                DateTime end = route.Date.Add(totalTime);
+
+                ganttData.Add(new GanttRow
+                {
+                    TruckName = route.Truck.LicensePlate,
+                    Start = route.Date,
+                    End = end
+                });
+
+                return end;
+            }
+
+            DateTime date = route.Date;
+
+            ganttData.Add(new GanttRow
+            {
+                TruckName = route.Truck.LicensePlate,
+                Start = date,
+                End = date.AddMinutes(firstSegment)
+            });
+
+            date = date.AddMinutes(firstSegment);
+
+            for (int i = 0; i < numberOfBreaks; i++)
+            {
+                ganttData.Add(new GanttRow
+                {
+                    TruckName = route.Truck.LicensePlate,
+                    Start = date,
+                    End = date.AddMinutes(route.Truck.DriverBreak)
+                });
+
+                date = date.AddMinutes(route.Truck.DriverBreak);
+
+                double segment = Math.Min(route.BreakFrequency, remainingAfterFirst);
+                remainingAfterFirst -= segment;
+
+                if (segment > 0)
+                {
+                    ganttData.Add(new GanttRow
+                    {
+                        TruckName = route.Truck.LicensePlate,
+                        Start = date,
+                        End = date.AddMinutes(segment)
+                    });
+
+                    date = date.AddMinutes(segment);
+                }
+            }
+
+            return date;
+        }
+    }
+
 }
+
+@{
+    var ganttData = new List<GanttRow>();
+
+    foreach (var r in Model)
+    {
+        CalculateEnd(r, ganttData);
+    }
+}
+
 
 <!DOCTYPE html>
 <html>
