@@ -22,5 +22,8 @@ namespace LogisticsAssistant.Models
         public int TruckVmax { get; set; }
         [Required]
         public int TruckDriverBreak { get; set; }
+        [Required]
+        public double RemainingToBreak { get; set; }
+
     }
 }

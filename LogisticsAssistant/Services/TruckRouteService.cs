@@ -25,25 +25,27 @@ namespace LogisticsAssistant.Services
                 .OrderByDescending(r => r.Date)
                 .FirstOrDefaultAsync();
 
+            double remainingToBreak = truckRouteView.BreakFrequency;
+
             if (lastRoute != null)
             {
-                if (lastRoute.TruckVmax <= 0 || lastRoute.BreakFrequency <= 0)
+                if(truck.Vmax <= 0 || truckRouteView.Distance <= 0)
                     return false;
+                double lastTravelMinutes = ((double)lastRoute.Distance / lastRoute.TruckVmax) * 60;
 
-                double travelMinutes = ((double)lastRoute.Distance / lastRoute.TruckVmax) * 60;
+                int lastBreaks = (int)(lastTravelMinutes / lastRoute.BreakFrequency);
+                double lastBreakMinutes = lastBreaks * lastRoute.TruckDriverBreak;
 
-                int numberOfBreaks = (int)(travelMinutes / lastRoute.BreakFrequency);
-                double breakMinutes = numberOfBreaks * lastRoute.TruckDriverBreak;
+                double lastSegmentMinutes = lastTravelMinutes % lastRoute.BreakFrequency;
+                if (lastSegmentMinutes == 0)
+                    lastSegmentMinutes = lastRoute.BreakFrequency;
 
-                double totalMinutes = travelMinutes + breakMinutes;
+                remainingToBreak = lastRoute.BreakFrequency - lastSegmentMinutes;
 
-                if (double.IsInfinity(totalMinutes) || double.IsNaN(totalMinutes))
-                    return false;
+                double lastTotalMinutes = lastTravelMinutes + lastBreakMinutes;
+                DateTime lastRouteEnd = lastRoute.Date.AddMinutes(lastTotalMinutes);
 
-                DateTime lastRouteEnd = lastRoute.Date.AddMinutes(totalMinutes);
-                DateTime earliestNextRoute = lastRouteEnd.AddMinutes(truck.DriverBreak);
-
-                if (truckRouteView.Date < earliestNextRoute)
+                if (truckRouteView.Date < lastRouteEnd)
                     return false;
             }
 
@@ -54,7 +56,8 @@ namespace LogisticsAssistant.Services
                 BreakFrequency = truckRouteView.BreakFrequency,
                 Date = truckRouteView.Date,
                 TruckVmax = truck.Vmax,
-                TruckDriverBreak = truck.DriverBreak
+                TruckDriverBreak = truck.DriverBreak,
+                RemainingToBreak = remainingToBreak
             };
 
             _context.Routes.Add(newRoute);
@@ -62,6 +65,9 @@ namespace LogisticsAssistant.Services
 
             return true;
         }
+
+
+
 
         public Task<Dictionary<int, string>> GetAllTrucks()
         {

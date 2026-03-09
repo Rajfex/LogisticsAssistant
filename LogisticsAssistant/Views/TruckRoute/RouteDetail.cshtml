@@ -6,13 +6,24 @@
     double distance = Model.Distance;
     double vmax = Model.Truck.Vmax;
     double breakFrequency = Model.BreakFrequency;
-    double driverBreak = Model.Truck.DriverBreak; 
+    double driverBreak = Model.Truck.DriverBreak;
     DateTime start = Model.Date;
+
+    double remainingToBreak = Model.RemainingToBreak;
 
     double driveHours = distance / vmax;
     double driveMinutes = driveHours * 60;
 
-    int numberOfBreaks = (int)(driveMinutes / breakFrequency);
+    double firstSegment = Math.Min(remainingToBreak, driveMinutes);
+    double remainingAfterFirst = driveMinutes - firstSegment;
+
+    int numberOfBreaks = 0;
+
+    if (remainingAfterFirst > 0)
+    {
+        numberOfBreaks++;
+        numberOfBreaks += (int)(remainingAfterFirst / breakFrequency);
+    }
 
     double totalBreakMinutes = numberOfBreaks * driverBreak;
 
@@ -40,5 +51,10 @@
     <p>Total driving time: @drivingTime</p>
     <p>Total break time: @breakTime</p>
     <p>Total route duration: @totalTime</p>
+
     <p><strong>Route ends at: @endTime</strong></p>
+
+    <hr />
+
+    <a asp-action="Index">Back to list</a>
 </div>
